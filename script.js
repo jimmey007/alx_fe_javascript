@@ -79,22 +79,10 @@ function exportToJsonFile() {
 function importFromJsonFile(event) {
   const fileReader = new FileReader();
   fileReader.onload = function(event) {
-    try {
-      const importedQuotes = JSON.parse(event.target.result);
-
-      // Validate that imported data is an array of objects with 'text' and 'category'
-      if (!Array.isArray(importedQuotes) || !importedQuotes.every(q => q.text && q.category)) {
-        alert("Invalid JSON format. Please provide a valid quotes JSON file.");
-        return;
-      }
-
-      quotes.push(...importedQuotes);
-      localStorage.setItem("quotes", JSON.stringify(quotes)); // Explicitly save to localStorage
-      alert("Quotes imported successfully!");
-      showRandomQuote(); // Update display
-    } catch (error) {
-      alert("Error parsing JSON file. Please check the file format.");
-    }
+    const importedQuotes = JSON.parse(event.target.result);
+    quotes.push(...importedQuotes);
+    saveQuotes();
+    alert('Quotes imported successfully!');
   };
   fileReader.readAsText(event.target.files[0]);
 }
