@@ -1,78 +1,106 @@
-// Load quotes from localStorage or initialize with default quotes
-let quotes = JSON.parse(localStorage.getItem('quotes')) || [
+// Retrieve stored quotes or initialize an array if none exist
+let quotes = JSON.parse(localStorage.getItem("quotes")) || [
   { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Inspiration" },
   { text: "Do what you can, with what you have, where you are.", category: "Motivation" },
   { text: "The best way to predict the future is to invent it.", category: "Innovation" }
 ];
 
-// Save quotes to localStorage
+// Function to save quotes to local storage
 function saveQuotes() {
-  localStorage.setItem('quotes', JSON.stringify(quotes)); // Save quotes array to localStorage
+  localStorage.setItem("quotes", JSON.stringify(quotes));
 }
 
 // Function to display a random quote
 function showRandomQuote() {
-  const quoteDisplay = document.getElementById('quoteDisplay');
+  if (quotes.length === 0) {
+    document.getElementById("quoteDisplay").innerHTML = `<em>No quotes available!</em>`;
+    return;
+  }
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const randomQuote = quotes[randomIndex];
-  quoteDisplay.innerHTML = `<strong>${randomQuote.text}</strong> <em>(${randomQuote.category})</em>`;
 
-  // Save the last viewed quote to sessionStorage (optional)
-  sessionStorage.setItem('lastViewedQuote', JSON.stringify(randomQuote));
+  // Store last viewed quote in session storage
+  sessionStorage.setItem("lastViewedQuote", JSON.stringify(randomQuote));
+
+  document.getElementById("quoteDisplay").innerHTML = `<strong>${randomQuote.text}</strong> <em>(${randomQuote.category})</em>`;
+}
+
+// Function to restore last viewed quote from session storage
+function restoreLastViewedQuote() {
+  const lastViewedQuote = JSON.parse(sessionStorage.getItem("lastViewedQuote"));
+  if (lastViewedQuote) {
+    document.getElementById("quoteDisplay").innerHTML = `<strong>${lastViewedQuote.text}</strong> <em>(${lastViewedQuote.category})</em>`;
+  } else {
+    showRandomQuote();
+  }
 }
 
 // Function to add a new quote
 function addQuote() {
-  const newQuoteText = document.getElementById('newQuoteText').value.trim();
-  const newQuoteCategory = document.getElementById('newQuoteCategory').value.trim();
+  const newQuoteText = document.getElementById("newQuoteText").value.trim();
+  const newQuoteCategory = document.getElementById("newQuoteCategory").value.trim();
 
-  if (newQuoteText && newQuoteCategory) {
-    quotes.push({ text: newQuoteText, category: newQuoteCategory });
-    saveQuotes(); // Save updated quotes to localStorage
-    document.getElementById('newQuoteText').value = '';
-    document.getElementById('newQuoteCategory').value = '';
-    alert('Quote added successfully!');
-  } else {
-    alert('Please fill in both the quote and category fields.');
+  if (!newQuoteText || !newQuoteCategory) {
+    alert("Please fill in both the quote and category fields.");
+    return;
   }
+
+  // Check for duplicate quotes
+  const isDuplicate = quotes.some(quote => quote.text.toLowerCase() === newQuoteText.toLowerCase());
+  if (isDuplicate) {
+    alert("This quote already exists!");
+    return;
+  }
+
+  // Add the new quote and update local storage
+  quotes.push({ text: newQuoteText, category: newQuoteCategory });
+  saveQuotes();
+
+  // Clear input fields and show the new quote instantly
+  document.getElementById("newQuoteText").value = "";
+  document.getElementById("newQuoteCategory").value = "";
+  showRandomQuote();
 }
 
-// Function to export quotes as a JSON file
-function exportQuotes() {
-  const dataStr = JSON.stringify(quotes, null, 2); // Convert quotes array to JSON string
-  const blob = new Blob([dataStr], { type: 'application/json' }); // Create a Blob
-  const url = URL.createObjectURL(blob); // Create a URL for the Blob
-
-  const a = document.createElement('a');
+// Function to export quotes to JSON
+function exportToJsonFile() {
+  const dataStr = JSON.stringify(quotes, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
   a.href = url;
-  a.download = 'quotes.json'; // Set the filename for the download
+  a.download = "quotes.json";
   document.body.appendChild(a);
-  a.click(); // Trigger the download
+  a.click();
   document.body.removeChild(a);
-  URL.revokeObjectURL(url); // Clean up the URL
 }
 
 // Function to import quotes from a JSON file
 function importFromJsonFile(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
   const fileReader = new FileReader();
-  fileReader.onload = function (e) {
+  fileReader.onload = function(event) {
     try {
-      const importedQuotes = JSON.parse(e.target.result); // Parse the uploaded file
-      quotes.push(...importedQuotes); // Add imported quotes to the array
-      saveQuotes(); // Save updated quotes to localStorage
-      alert('Quotes imported successfully!');
+      const importedQuotes = JSON.parse(event.target.result);
+
+      // Validate that imported data is an array of objects with 'text' and 'category'
+      if (!Array.isArray(importedQuotes) || !importedQuotes.every(q => q.text && q.category)) {
+        alert("Invalid JSON format. Please provide a valid quotes JSON file.");
+        return;
+      }
+
+      quotes.push(...importedQuotes);
+      saveQuotes();
+      alert("Quotes imported successfully!");
+      showRandomQuote(); // Update display
     } catch (error) {
-      alert('Invalid JSON file. Please upload a valid quotes file.');
+      alert("Error parsing JSON file. Please check the file format.");
     }
   };
-  fileReader.readAsText(file); // Read the file as text
+  fileReader.readAsText(event.target.files[0]);
 }
 
 // Event listener for the "Show New Quote" button
-document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 
-// Initial display of a random quote
-showRandomQuote();  
+// Restore last viewed quote on page load
+restoreLastViewedQuote();
