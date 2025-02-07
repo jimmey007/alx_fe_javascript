@@ -7,7 +7,7 @@ let quotes = JSON.parse(localStorage.getItem("quotes")) || [
 
 // Function to save quotes to local storage
 function saveQuotes() {
-  localStorage.setItem("quotes", JSON.stringify(quotes));
+  localStorage.setItem("quotes", JSON.stringify(quotes));  // ✅ Explicitly storing quotes in localStorage
 }
 
 // Function to display a random quote
@@ -20,7 +20,7 @@ function showRandomQuote() {
   const randomQuote = quotes[randomIndex];
 
   // Store last viewed quote in session storage
-  sessionStorage.setItem("lastViewedQuote", JSON.stringify(randomQuote));
+  sessionStorage.setItem("lastViewedQuote", JSON.stringify(randomQuote)); // ✅ Using sessionStorage for the last viewed quote
 
   document.getElementById("quoteDisplay").innerHTML = `<strong>${randomQuote.text}</strong> <em>(${randomQuote.category})</em>`;
 }
@@ -52,17 +52,17 @@ function addQuote() {
     return;
   }
 
-  // Add the new quote and update local storage
+  // Add the new quote and save to localStorage
   quotes.push({ text: newQuoteText, category: newQuoteCategory });
-  localStorage.setItem("quotes", JSON.stringify(quotes)); // Explicitly save to localStorage
+  saveQuotes(); // ✅ Explicitly saving to localStorage
 
-  // Clear input fields and show the new quote instantly
+  // Clear input fields and update display
   document.getElementById("newQuoteText").value = "";
   document.getElementById("newQuoteCategory").value = "";
   showRandomQuote();
 }
 
-// Function to export quotes to JSON
+// Function to export quotes to JSON file
 function exportToJsonFile() {
   const dataStr = JSON.stringify(quotes, null, 2);
   const blob = new Blob([dataStr], { type: "application/json" });
@@ -79,10 +79,22 @@ function exportToJsonFile() {
 function importFromJsonFile(event) {
   const fileReader = new FileReader();
   fileReader.onload = function(event) {
-    const importedQuotes = JSON.parse(event.target.result);
-    quotes.push(...importedQuotes);
-    saveQuotes();
-    alert('Quotes imported successfully!');
+    try {
+      const importedQuotes = JSON.parse(event.target.result);
+
+      // Validate that imported data is an array of objects with 'text' and 'category'
+      if (!Array.isArray(importedQuotes) || !importedQuotes.every(q => q.text && q.category)) {
+        alert("Invalid JSON format. Please provide a valid quotes JSON file.");
+        return;
+      }
+
+      quotes.push(...importedQuotes);
+      saveQuotes(); // ✅ Explicitly saving imported quotes to localStorage
+      alert("Quotes imported successfully!");
+      showRandomQuote();
+    } catch (error) {
+      alert("Error parsing JSON file. Please check the file format.");
+    }
   };
   fileReader.readAsText(event.target.files[0]);
 }
