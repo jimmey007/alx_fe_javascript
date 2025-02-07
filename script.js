@@ -1,4 +1,4 @@
-// Retrieve stored quotes or initialize an array if none exist
+// Retrieve stored quotes or initialize with default quotes
 let quotes = JSON.parse(localStorage.getItem("quotes")) || [
   { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Inspiration" },
   { text: "Do what you can, with what you have, where you are.", category: "Motivation" },
@@ -54,7 +54,7 @@ function addQuote() {
 
   // Add the new quote and update local storage
   quotes.push({ text: newQuoteText, category: newQuoteCategory });
-  saveQuotes();
+  localStorage.setItem("quotes", JSON.stringify(quotes)); // Explicitly save to localStorage
 
   // Clear input fields and show the new quote instantly
   document.getElementById("newQuoteText").value = "";
@@ -89,7 +89,7 @@ function importFromJsonFile(event) {
       }
 
       quotes.push(...importedQuotes);
-      saveQuotes();
+      localStorage.setItem("quotes", JSON.stringify(quotes)); // Explicitly save to localStorage
       alert("Quotes imported successfully!");
       showRandomQuote(); // Update display
     } catch (error) {
