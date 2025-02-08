@@ -70,18 +70,16 @@ function exportQuotes() {
 
 // Import quotes from a JSON file
 function importFromJsonFile(event) {
-    const fileReader = new FileReader();
-    fileReader.onload = function(event) {
-        const importedQuotes = JSON.parse(event.target.result);
-        quotes.push(...importedQuotes); // Add imported quotes to the array
-        saveQuotes(); // Save to local storage
-        populateCategories(); // Update categories dropdown
-        showRandomQuote(); // Display a random quote
-        alert('Quotes imported successfully!');
-    };
-    fileReader.readAsText(event.target.files[0]);
+  const fileReader = new FileReader();
+  fileReader.onload = function(event) {
+    const importedQuotes = JSON.parse(event.target.result);
+    quotes.push(...importedQuotes);
+    saveQuotes();
+    alert('Quotes imported successfully!');
+  };
+  fileReader.readAsText(event.target.files[0]);
 }
-
+  
 // Populate categories dropdown
 function populateCategories() {
     const categoryFilter = document.getElementById('categoryFilter');
