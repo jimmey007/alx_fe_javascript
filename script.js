@@ -5,15 +5,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const newQuoteCategory = document.getElementById("newQuoteCategory");
   const importFile = document.getElementById("importFile");
 
-  let quotes = JSON.parse(localStorage.quotes || "[]");
-  if (!quotes.length) quotes = [
+  let quotes = JSON.parse(localStorage.getItem("quotes")) || [
       { text: "The best way to predict the future is to create it.", category: "Motivation" },
       { text: "Do what you can, with what you have, where you are.", category: "Inspiration" },
       { text: "Life is what happens when you’re busy making other plans.", category: "Life" }
   ];
 
   function saveQuotes() {
-      localStorage.quotes = JSON.stringify(quotes);
+      localStorage.setItem("quotes", JSON.stringify(quotes));
   }
 
   function showRandomQuote() {
