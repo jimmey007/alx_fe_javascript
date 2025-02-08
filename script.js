@@ -12,7 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   function saveQuotes() {
-      localStorage.setItem("quotes", JSON.stringify(quotes));
+      try {
+          localStorage.setItem("quotes", JSON.stringify(quotes));
+          console.log("Quotes saved successfully:", quotes);
+      } catch (error) {
+          console.error("Error saving quotes to localStorage:", error);
+      }
   }
 
   function showRandomQuote() {
@@ -49,7 +54,10 @@ document.addEventListener("DOMContentLoaded", () => {
                   saveQuotes();
                   alert("Quotes imported successfully!");
               } else alert("Invalid file format.");
-          } catch { alert("Error parsing JSON file."); }
+          } catch (error) {
+              console.error("Error parsing JSON file:", error);
+              alert("Error parsing JSON file.");
+          }
       };
       fileReader.readAsText(event.target.files[0]);
   }
