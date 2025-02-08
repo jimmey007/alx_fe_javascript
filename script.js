@@ -1,12 +1,13 @@
 // Array to store quotes
 let quotes = [];
 
-// Load quotes from local storage when the page loads
+// Load quotes and categories from local storage when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     const storedQuotes = localStorage.getItem('quotes');
     if (storedQuotes) {
         quotes = JSON.parse(storedQuotes);
     }
+    populateCategories();
     showRandomQuote();
 });
 
@@ -41,6 +42,7 @@ function addQuote() {
         };
         quotes.push(newQuote);
         saveQuotes(); // Save to local storage
+        populateCategories(); // Update categories dropdown
         showRandomQuote(); // Display the new quote
         alert('Quote added successfully!');
         // Clear input fields
@@ -72,10 +74,36 @@ function importFromJsonFile(event) {
         const importedQuotes = JSON.parse(event.target.result);
         quotes.push(...importedQuotes); // Add imported quotes to the array
         saveQuotes(); // Save to local storage
+        populateCategories(); // Update categories dropdown
         showRandomQuote(); // Display a random quote
         alert('Quotes imported successfully!');
     };
     fileReader.readAsText(event.target.files[0]);
+}
+
+// Populate categories dropdown
+function populateCategories() {
+    const categoryFilter = document.getElementById('categoryFilter');
+    const categories = [...new Set(quotes.map(quote => quote.category))]; // Extract unique categories
+    categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+    categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categoryFilter.appendChild(option);
+    });
+}
+
+// Filter quotes by category
+function filterQuotes() {
+    const selectedCategory = document.getElementById('categoryFilter').value;
+    const filteredQuotes = selectedCategory === 'all' ? quotes : quotes.filter(quote => quote.category === selectedCategory);
+    const quoteDisplay = document.getElementById('quoteDisplay');
+    if (filteredQuotes.length > 0) {
+        quoteDisplay.innerHTML = filteredQuotes.map(quote => `<p>"${quote.text}" - ${quote.category}</p>`).join('');
+    } else {
+        quoteDisplay.innerHTML = `<p>No quotes available for this category.</p>`;
+    }
 }
 
 // Display the last viewed quote from session storage

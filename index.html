@@ -15,7 +15,7 @@
             border: 1px solid #ccc;
             background-color: #f9f9f9;
         }
-        input, button {
+        input, button, select {
             margin: 5px;
             padding: 10px;
         }
@@ -25,6 +25,12 @@
     <h1>Dynamic Quote Generator</h1>
     <div id="quoteDisplay">No quotes available. Add some!</div>
     <button id="newQuote" onclick="showRandomQuote()">Show New Quote</button>
+
+    <h2>Filter Quotes by Category</h2>
+    <select id="categoryFilter" onchange="filterQuotes()">
+        <option value="all">All Categories</option>
+        <!-- Categories will be populated dynamically -->
+    </select>
 
     <h2>Add a New Quote</h2>
     <div>
