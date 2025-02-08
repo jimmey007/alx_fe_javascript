@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (storedQuotes) {
         quotes = JSON.parse(storedQuotes);
     }
-    populateCategories();
-    showRandomQuote();
+    populateCategories(); // Populate categories dropdown
+    showRandomQuote(); // Display a random quote
 });
 
 // Save quotes to local storage
@@ -84,8 +84,11 @@ function importFromJsonFile(event) {
 // Populate categories dropdown
 function populateCategories() {
     const categoryFilter = document.getElementById('categoryFilter');
-    const categories = [...new Set(quotes.map(quote => quote.category))]; // Extract unique categories
+    // Extract unique categories using map and Set
+    const categories = [...new Set(quotes.map(quote => quote.category))];
+    // Clear existing options
     categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+    // Add new options
     categories.forEach(category => {
         const option = document.createElement('option');
         option.value = category;
