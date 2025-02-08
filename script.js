@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (storedQuotes) {
         quotes = JSON.parse(storedQuotes);
     }
+    fetchQuotesFromServer(); // Fetch quotes from the server (simulated)
     populateCategories(); // Populate categories dropdown
     showRandomQuote(); // Display a random quote
 });
@@ -107,6 +108,25 @@ function filterQuotes() {
     } else {
         quoteDisplay.innerHTML = `<p>No quotes available for this category.</p>`;
     }
+}
+
+// Fetch quotes from the server (simulated)
+function fetchQuotesFromServer() {
+    // Simulate fetching quotes from a server using a mock API or hardcoded data
+    const mockQuotes = [
+        { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Inspiration" },
+        { text: "Do what you can, with what you have, where you are.", category: "Motivation" },
+        { text: "The best way to predict the future is to invent it.", category: "Innovation" }
+    ];
+
+    // Simulate a delay to mimic server response time
+    setTimeout(() => {
+        quotes.push(...mockQuotes); // Add fetched quotes to the array
+        saveQuotes(); // Save to local storage
+        populateCategories(); // Update categories dropdown
+        showRandomQuote(); // Display a random quote
+        alert('Quotes fetched from the server successfully!');
+    }, 1000); // Simulate a 1-second delay
 }
 
 // Display the last viewed quote from session storage
